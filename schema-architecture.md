@@ -1,4 +1,3 @@
----
 ### 🏗️ Application Architecture Description
 
 The Smart Clinic Management System is designed using a three-tier architecture that separates the application into distinct layers: presentation, application, and data. This structure helps improve scalability, maintainability, and flexibility. The system supports both traditional web dashboards for admins and doctors—built using Spring MVC and Thymeleaf—and RESTful APIs for modules like appointments and patient records, making it suitable for mobile apps and future integrations.
