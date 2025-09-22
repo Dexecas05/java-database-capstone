@@ -1,5 +1,15 @@
 package com.project.back_end.models;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
+@Entity
 public class Patient {
 // @Entity annotation:
 //    - Marks the class as a JPA entity, meaning it represents a table in the database.
@@ -11,6 +21,9 @@ public class Patient {
 //      - Represents the unique identifier for each patient.
 //      - The @Id annotation marks it as the primary key.
 //      - The @GeneratedValue(strategy = GenerationType.IDENTITY) annotation auto-generates the ID value when a new record is inserted into the database.
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
 // 2. 'name' field:
 //    - Type: private String
@@ -19,6 +32,9 @@ public class Patient {
 //      - The @NotNull annotation ensures that the patient's name is required.
 //      - The @Size(min = 3, max = 100) annotation ensures that the name length is between 3 and 100 characters. 
 //      - Provides validation for correct input and user experience.
+    @NotNull(message = "a name must be provided")
+    @Size(min = 3, max = 100)
+    private String name;
 
 
 // 3. 'email' field:
@@ -27,6 +43,10 @@ public class Patient {
 //      - Represents the patient's email address.
 //      - The @NotNull annotation ensures that an email address must be provided.
 //      - The @Email annotation validates that the email address follows a valid email format (e.g., patient@example.com).
+    @NotNull(message = "an email address must be provided")
+    @Email(message = "email adresses must be in a valid format (e.g., patient@example.com).")
+    private String email;
+
 
 // 4. 'password' field:
 //    - Type: private String
@@ -34,6 +54,10 @@ public class Patient {
 //      - Represents the patient's password for login authentication.
 //      - The @NotNull annotation ensures that a password must be provided.
 //      - The @Size(min = 6) annotation ensures that the password must be at least 6 characters long.
+    @NotNull(message = "providing a password is mandatory.")
+    @Size(min = 6)
+    private String password;
+
 
 // 5. 'phone' field:
 //    - Type: private String
@@ -41,6 +65,9 @@ public class Patient {
 //      - Represents the patient's phone number.
 //      - The @NotNull annotation ensures that a phone number must be provided.
 //      - The @Pattern(regexp = "^[0-9]{10}$") annotation validates that the phone number must be exactly 10 digits long.
+    @NotNull(message = "providing a phone number is mandatory.")
+    @Pattern(regexp = "^[0-9]{10}$", message = "the phone number must be exactly 10 digits long.")
+    private String phone;
 
 // 6. 'address' field:
 //    - Type: private String
@@ -48,6 +75,9 @@ public class Patient {
 //      - Represents the patient's address.
 //      - The @NotNull annotation ensures that the address must be provided.
 //      - The @Size(max = 255) annotation ensures that the address does not exceed 255 characters in length, providing validation for the address input.
+    @NotNull(message = "an updated address must be provided.")
+    @Size(max = 255)
+    private String address;
 
 
 // 7. Getters and Setters:
