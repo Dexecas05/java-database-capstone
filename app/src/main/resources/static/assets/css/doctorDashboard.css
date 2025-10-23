@@ -63,3 +63,220 @@
 
 Let me know if you'd like a consolidated style guide for the entire HospitalCRM frontend.
  */
+
+/* -----------------------------------------------------------------------
+   DOCTOR DASHBOARD SPECIFIC STYLES
+   ----------------------------------------------------------------------- */
+
+/* --- Layout and Base Styling --- */
+.wrapper {
+    /* Inherits vertical flex layout from global style.css */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 30px 40px;
+    background-color: #f7f9fc; /* Light, calming background */
+}
+
+.main-content h2 {
+    color: #015c5d; /* Dark teal accent */
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+    border-bottom: 2px solid #e0e6ec;
+    padding-bottom: 10px;
+}
+
+/* -----------------------------------------------------------------------
+   SEARCH AND FILTER BAR
+   ----------------------------------------------------------------------- */
+
+.search-and-filter-bar {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.doctor-filters {
+    flex-grow: 1;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+/* Date Filter Input Styling */
+.date-filter {
+    /* Leveraging .select-dropdown from style.css */
+    padding: 10px 15px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+/* Today's Appointments Button */
+#todayAppointmentsBtn {
+    /* Custom button style for the Doctor view */
+    background-color: #015c5d; /* Primary teal */
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+#todayAppointmentsBtn:hover {
+    background-color: #017d7e; /* Slightly lighter on hover */
+    transform: translateY(-1px);
+}
+
+/* Search Bar */
+#searchBar {
+    flex-grow: 1;
+    min-width: 250px;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+#searchBar:focus {
+    border-color: #015c5d;
+    outline: none;
+}
+
+
+/* -----------------------------------------------------------------------
+   PATIENT RECORDS TABLE
+   ----------------------------------------------------------------------- */
+
+.table-container {
+    overflow-x: auto; /* Ensures table is scrollable on small screens */
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse; /* Removes spacing between borders */
+    min-width: 700px; /* Minimum width to prevent crushing on desktop */
+}
+
+.data-table thead {
+    background-color: #e9ecef; /* Light gray header */
+    color: #333;
+    text-align: left;
+    font-weight: 700;
+    border-bottom: 2px solid #ced4da;
+}
+
+.data-table th {
+    padding: 15px 20px;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.data-table tbody tr {
+    transition: background-color 0.3s ease;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Alternating row colors for readability */
+.data-table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+/* Highlight row on hover */
+.data-table tbody tr:hover {
+    background-color: #e2f0f0; /* Light teal tint on hover */
+    cursor: default;
+}
+
+.data-table td {
+    padding: 15px 20px;
+    vertical-align: middle;
+    color: #444;
+}
+
+/* No Records Message */
+.noPatientRecord {
+    text-align: center;
+    font-style: italic;
+    color: #999;
+    padding: 20px;
+}
+
+/* -----------------------------------------------------------------------
+   ACTION BUTTONS IN TABLE
+   ----------------------------------------------------------------------- */
+
+/* Button specifically for adding prescriptions */
+.prescription-btn {
+    background-color: #2ecc71; /* Green for success/add action */
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.prescription-btn:hover {
+    background-color: #27ae60;
+    transform: scale(1.02); /* Slight scale effect on hover */
+    box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3);
+}
+
+/* -----------------------------------------------------------------------
+   RESPONSIVENESS
+   ----------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+    .main-content {
+        padding: 20px;
+    }
+
+    .search-and-filter-bar {
+        /* Stack elements vertically for mobile view */
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .doctor-filters {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    /* Allow the table to scroll horizontally if content exceeds screen width */
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .doctor-filters {
+        flex-direction: column; /* Stack date input and button on small phones */
+    }
+
+    #searchBar {
+        min-width: 100%;
+    }
+}

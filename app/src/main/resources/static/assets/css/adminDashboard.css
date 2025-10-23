@@ -92,3 +92,220 @@ Admin Button (`.adminBtn`)
 
 
 */
+
+/* -----------------------------------------------------------------------
+   ADMIN DASHBOARD SPECIFIC STYLES
+   ----------------------------------------------------------------------- */
+
+/* --- Universal Styling (Partial Reset/Base Setup) --- */
+/* Leveraging global resets from style.css, focusing on layout overrides */
+.wrapper {
+    /* Ensure the wrapper maintains flex-column inherited from index.css for correct footer positioning */
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 30px 40px; /* Generous padding for content */
+    background-color: #f7f9fc; /* Light background for the dashboard area */
+}
+
+/* Heading */
+.main-content h2 {
+    color: #1a5276;
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+    border-bottom: 2px solid #e0e6ec;
+    padding-bottom: 10px;
+}
+
+/* -----------------------------------------------------------------------
+   MANAGEMENT TOOLS: Search, Filters, and Buttons
+   ----------------------------------------------------------------------- */
+
+.management-tools {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.search-and-filter-bar {
+    display: flex;
+    gap: 20px; /* Spacing between search and filters */
+    align-items: center;
+    flex-wrap: wrap; /* Allows wrapping on smaller screens */
+}
+
+/* Search Bar Styling */
+#searchBar {
+    flex-grow: 1; /* Allows search bar to take up most of the space */
+    min-width: 200px;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+#searchBar:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+/* Filter Dropdowns Container */
+.filters {
+    display: flex;
+    gap: 15px;
+    flex-shrink: 0; /* Prevents filters from shrinking too much */
+}
+
+.select-dropdown {
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* Admin Button Specifics (Used for Add Doctor) */
+.admin-button {
+    /* Leveraging .dashboard-btn from style.css for base */
+    background-color: #e74c3c; /* Red accent for admin actions */
+    padding: 12px 25px;
+    font-weight: 600;
+}
+
+.admin-button:hover {
+    background-color: #c0392b;
+    box-shadow: 0 6px 12px rgba(231, 76, 60, 0.3);
+    transform: translateY(-1px);
+}
+
+/* -----------------------------------------------------------------------
+   DOCTORS CONTENT AREA (Content & Cards)
+   ----------------------------------------------------------------------- */
+
+.doctors-list-section h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.doctors-grid {
+    display: grid;
+    /* Responsive Grid: minimum width of 300px per card */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px; /* Spacing between cards */
+    padding: 10px;
+}
+
+/* Doctor Card Base Style (Will be finalized in doctorCard.css) */
+.doctor-card {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 5px solid #3498db;
+}
+
+.doctor-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+
+/* -----------------------------------------------------------------------
+   MODAL FORM STYLING (Inputs inside the modal)
+   ----------------------------------------------------------------------- */
+
+.modal-form h3 {
+    color: #1a5276;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #555;
+}
+
+/* Input styling is inherited from style.css's .input-field, but this ensures consistency */
+.modal-content .input-field {
+    width: 100%;
+}
+
+.modal-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-actions button {
+    /* Use the admin button style for the primary action (Add Doctor) */
+    background-color: #27ae60;
+}
+.modal-actions button:hover {
+    background-color: #2ecc71;
+}
+
+/* -----------------------------------------------------------------------
+   RESPONSIVENESS
+   ----------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+    .main-content {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .search-and-filter-bar {
+        /* Stack the search bar and filters vertically */
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filters {
+        /* Allow filters to take full width and stack if necessary */
+        width: 100%;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .select-dropdown {
+        flex: 1;
+    }
+
+    .doctors-grid {
+        /* Switch to a simpler grid layout on smaller tablets/mobile */
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .filters {
+        flex-direction: column; /* Stack filters on very small screens */
+    }
+
+    .doctors-grid {
+        /* Single column for phones */
+        grid-template-columns: 1fr;
+    }
+}

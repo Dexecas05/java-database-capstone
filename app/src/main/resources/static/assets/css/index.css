@@ -51,3 +51,309 @@
 * Use the same base green background (`#015c5d`) as the default button.
 * On hover, darken the background to deep teal (`#003e3e`) for visual feedback.
  */
+
+ /* -----------------------------------------------------------------------
+    GLOBAL RESETS AND BASE STYLES (REQUIRED)
+    ----------------------------------------------------------------------- */
+
+ * {
+     margin: 0;
+     padding: 0;
+     box-sizing: border-box; /* Crucial for layout consistency */
+ }
+
+ html, body {
+     height: 100%;
+     font-family: 'Roboto', sans-serif; /* Fallback to sans-serif */
+     color: #333; /* Dark gray for good readability */
+     background-color: #f4f7f6; /* Very light gray background */
+ }
+
+ /* -----------------------------------------------------------------------
+    LAYOUT AND MAIN CONTENT
+    ----------------------------------------------------------------------- */
+
+ .main-content {
+     /* Full viewport height and responsive background */
+     min-height: 100vh;
+     width: 100%;
+     background-color: #eaf1f7; /* Soft blue background color */
+     background-image: url('../images/defineRole/index.png'); /* Placeholder background image */
+     background-size: cover;
+     background-position: center;
+     background-attachment: fixed; /* Fixed background that doesn’t scroll */
+
+     /* Centering the content using Flexbox */
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     padding: 20px;
+ }
+
+ .container {
+     /* Maximum width to prevent content stretching too wide on large screens */
+     width: 100%;
+     max-width: 1200px;
+ }
+
+ .wrapper {
+     /* Layout for header, content, and footer inside the container */
+     display: flex;
+     flex-direction: column;
+     min-height: calc(100vh - 40px); /* Adjusting for main-content padding */
+     background-color: rgba(255, 255, 255, 0.95); /* Semi-transparent white card */
+     border-radius: 12px;
+     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+     overflow: hidden; /* Ensures rounded corners are respected */
+ }
+
+ /* -----------------------------------------------------------------------
+    HEADER AND FOOTER PLACEHOLDER STYLES
+    ----------------------------------------------------------------------- */
+
+ /* --- Header Styles (.header) --- */
+ .header {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     padding: 15px 30px;
+     border-bottom: 1px solid #e0e0e0;
+     background-color: #ffffff;
+ }
+
+ .logo img {
+     height: 40px; /* Standard size for logo */
+     vertical-align: middle;
+ }
+
+ .nav-item {
+     padding: 0 15px;
+     text-decoration: none;
+     color: #007bff;
+     font-weight: 500;
+ }
+
+ @media (max-width: 768px) {
+     .header {
+         flex-direction: column;
+         text-align: center;
+     }
+     .nav-item {
+         margin-top: 10px;
+     }
+ }
+
+ /* --- Footer Styles (.footer) --- */
+ .footer {
+     padding: 20px 30px;
+     background-color: #2c3e50; /* Dark, professional color */
+     color: #ecf0f1;
+     text-align: center;
+     font-size: 0.9em;
+     margin-top: auto; /* Pushes the footer to the bottom of the wrapper */
+
+     /* Flexbox for inner sectioning (if needed for columns) */
+     display: flex;
+     flex-direction: column;
+     justify-content: center;
+     align-items: center;
+ }
+
+ @media (min-width: 600px) {
+     .footer {
+         flex-direction: row; /* Example of flexbox-based sectioning */
+         justify-content: space-around;
+     }
+ }
+
+
+ /* -----------------------------------------------------------------------
+    ROLE SELECTION CONTENT (index.html specific)
+    ----------------------------------------------------------------------- */
+
+ .role-selection {
+     flex-grow: 1; /* Allows this section to fill the available space */
+     display: flex;
+     flex-direction: column;
+     justify-content: center;
+     align-items: center;
+     padding: 50px 20px;
+     text-align: center;
+ }
+
+ h2 {
+     font-size: 2.5rem;
+     color: #1a5276; /* Deep blue heading color */
+     margin-bottom: 40px;
+     font-family: 'Roboto', serif;
+     font-weight: 700;
+ }
+
+ .role-buttons {
+     display: flex;
+     gap: 25px; /* Spacing between buttons */
+     flex-wrap: wrap; /* Allows buttons to stack on smaller screens */
+     justify-content: center;
+ }
+
+ .role-btn {
+     padding: 20px 30px;
+     border: none;
+     border-radius: 10px;
+     font-size: 1.25rem;
+     font-weight: bold;
+     cursor: pointer;
+     transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+     width: 200px; /* Fixed width for uniformity */
+     text-transform: uppercase;
+ }
+
+ /* Specific button colors */
+ .role-btn.admin {
+     background-color: #e74c3c; /* Red for Admin */
+     color: white;
+ }
+ .role-btn.doctor {
+     background-color: #27ae60; /* Green for Doctor */
+     color: white;
+ }
+ .role-btn.patient {
+     background-color: #3498db; /* Blue for Patient */
+     color: white;
+ }
+
+ /* Hover effects (Interactive Styles) */
+ .role-btn:hover {
+     transform: translateY(-3px);
+     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+ }
+
+ .role-btn.admin:hover {
+     background-color: #c0392b;
+ }
+ .role-btn.doctor:hover {
+     background-color: #2ecc71;
+ }
+ .role-btn.patient:hover {
+     background-color: #2980b9;
+ }
+
+
+ /* -----------------------------------------------------------------------
+    MODAL STYLES (Modal and button interactions)
+    ----------------------------------------------------------------------- */
+
+ .modal {
+     display: none; /* Hidden by default */
+     position: fixed;
+     z-index: 1000; /* High z-index to cover everything */
+     left: 0;
+     top: 0;
+     width: 100%;
+     height: 100%;
+     overflow: auto;
+     background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black overlay */
+     padding-top: 60px;
+ }
+
+ .modal.visible {
+     display: block; /* Shown when 'visible' class is added by JS */
+ }
+
+ .modal-content {
+     background-color: #ffffff;
+     margin: 5% auto; /* 5% from the top and centered */
+     padding: 30px;
+     border-radius: 8px;
+     width: 90%; /* Responsive width */
+     max-width: 500px; /* Max width for readability */
+     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+     position: relative;
+     animation-name: animatetop;
+     animation-duration: 0.4s
+ }
+
+ /* Modal animation */
+ @keyframes animatetop {
+     from {top: -300px; opacity: 0}
+     to {top: 0; opacity: 1}
+ }
+
+ .close-btn {
+     color: #aaa;
+     float: right;
+     font-size: 28px;
+     font-weight: bold;
+     transition: color 0.2s;
+ }
+
+ .close-btn:hover,
+ .close-btn:focus {
+     color: #555;
+     text-decoration: none;
+     cursor: pointer;
+ }
+
+
+ /* -----------------------------------------------------------------------
+    UTILITY & UI COMPONENTS STYLES (Interactive Styles for other elements)
+    ----------------------------------------------------------------------- */
+
+ /* --- General Button Styling (for utility buttons/dashboard buttons) --- */
+ .dashboard-btn, button:not(.role-btn) {
+     padding: 10px 20px;
+     border: none;
+     border-radius: 6px;
+     cursor: pointer;
+     font-size: 1rem;
+     font-weight: 500;
+     color: white;
+     background-color: #007bff;
+     transition: background-color 0.2s, box-shadow 0.2s;
+ }
+
+ .dashboard-btn:hover, button:not(.role-btn):hover {
+     background-color: #0056b3;
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+ }
+
+ /* --- Form Elements --- */
+ .input-field, .select-dropdown {
+     width: 100%;
+     padding: 10px;
+     margin: 8px 0;
+     display: inline-block;
+     border: 1px solid #ccc;
+     border-radius: 4px;
+     box-sizing: border-box;
+     transition: border-color 0.2s, box-shadow 0.2s;
+ }
+
+ .input-field:focus, .select-dropdown:focus {
+     border-color: #007bff;
+     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+     outline: none;
+ }
+
+ /* --- Checkbox Group --- */
+ .checkbox-group label {
+     display: block;
+     margin-bottom: 5px;
+     font-size: 0.95rem;
+     color: #555;
+ }
+
+ /* --- Responsive adjustments for forms on mobile --- */
+ @media (max-width: 500px) {
+     .role-buttons {
+         flex-direction: column;
+         gap: 15px;
+     }
+     .role-btn {
+         width: 100%;
+     }
+     .modal-content {
+         margin: 10% auto;
+     }
+ }
+

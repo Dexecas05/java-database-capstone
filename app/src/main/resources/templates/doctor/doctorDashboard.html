@@ -99,3 +99,110 @@ This file defines the Doctor Dashboard interface, allowing doctors to view and m
 
     * Properly close the `<body>` and `<html>` tags to complete the document.
  -->
+
+<!DOCTYPE html>
+<!-- Using Thymeleaf namespace for Spring Boot resource resolution -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DoctorDashboard - Appointment & Patient Management</title>
+
+    <!-- Favicon -->
+    <link rel="icon" th:href="@{/assets/images/logo/logo.png}" type="image/png">
+
+    <!-- CSS Links (Using Thymeleaf for correct path resolution) -->
+    <!-- Reusing style.css for global appearance -->
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <!-- Specific styles for the doctor's view -->
+    <link rel="stylesheet" th:href="@{/assets/css/doctorDashboard.css}">
+
+</head>
+<body>
+
+<div class="container">
+    <div class="wrapper">
+
+        <!-- Placeholder for the Header Component (e.g., Logo, Logout) -->
+        <div id="header"></div>
+
+        <main class="main-content">
+            <h2>Appointment Schedule & Patient Records</h2>
+
+            <section class="management-tools">
+                <div class="search-and-filter-bar doctor-filters">
+
+                    <!-- Search Bar: Searches for patients -->
+                    <input
+                            type="text"
+                            id="searchBar"
+                            placeholder="Search patients by name or ID..."
+                            class="input-field"
+                    />
+
+                    <!-- Date/Status Filters -->
+                    <div class="filters">
+                        <!-- Button for Today's Appointments -->
+                        <button id="todayAppointmentsBtn" class="dashboard-btn primary-btn">
+                            Today’s Appointments
+                        </button>
+
+                        <!-- Date Input for selecting other dates -->
+                        <input
+                                type="date"
+                                id="dateFilterInput"
+                                class="select-dropdown date-filter"
+                                title="Select appointment date"
+                        />
+                    </div>
+                </div>
+            </section>
+
+            <section class="patient-records-section">
+                <h3>Current Appointments</h3>
+
+                <div class="table-container">
+                    <!-- Patient Records Table -->
+                    <table id="patientTable" class="data-table">
+                        <thead>
+                        <tr>
+                            <th>Patient ID</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <!-- This column will likely contain action buttons for prescription/record viewing -->
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <!-- Table body populated dynamically by JavaScript -->
+                        <tbody id="patientRecordsBody">
+                        <!-- Dynamic rows (patientRows.js) will be injected here -->
+                        <tr><td colspan="5" class="loading-message">Loading patient appointments...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <!-- Placeholder for the Footer Component -->
+        <div id="footer"></div>
+
+    </div>
+</div>
+
+<!-- JavaScript Links (Using Thymeleaf) -->
+<!-- Utility and Rendering Logic (must come first) -->
+<script th:src="@{/js/render.js}" defer></script>
+<script th:src="@{/js/util.js}" defer></script>
+
+<!-- Layout Components -->
+<script th:src="@{/js/components/header.js}" defer></script>
+<script th:src="@{/js/components/footer.js}" defer></script>
+<script th:src="@{/js/components/patientRows.js}" defer></script>
+
+<!-- Core Services and Page-specific Logic -->
+<script type="module" th:src="@{/js/services/patientServices.js}" defer></script>
+<script type="module" th:src="@{/js/doctorDashboard.js}" defer></script>
+
+</body>
+</html>

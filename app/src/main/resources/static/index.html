@@ -102,3 +102,72 @@ and triggers modal-based login functionality.
     * Properly close all opened tags to complete the document structure.
 
  -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinic System - Select Your Role</title>
+
+    <link rel="icon" href="./assets/images/logo/logo.png" type="image/png">
+
+    <link rel="stylesheet" href="./assets/css/index.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
+
+</head>
+<body>
+
+<main class="main-content">
+    <div class="container">
+        <div class="wrapper">
+
+            <div id="header"></div>
+
+            <section class="role-selection">
+                <h2>Select Your Role</h2>
+
+                <div class="role-buttons">
+                    <button
+                            id="adminRoleBtn"
+                            onclick="selectRole('ADMIN')"
+                            class="role-btn admin">
+                        Admin
+                    </button>
+                    <button
+                            id="doctorRoleBtn"
+                            onclick="selectRole('DOCTOR')"
+                            class="role-btn doctor">
+                        Doctor
+                    </button>
+                    <button
+                            id="patientRoleBtn"
+                            onclick="selectRole('PATIENT')"
+                            class="role-btn patient">
+                        Patient
+                    </button>
+                </div>
+            </section>
+
+            <div id="footer"></div>
+
+        </div>
+    </div>
+</main>
+
+<div id="modal" class="modal hidden">
+    <div class="modal-content">
+        <span id="closeModal" class="close-btn">&times;</span>
+        <div id="modal-body">
+        </div>
+    </div>
+</div>
+
+<script src="./js/util.js" defer></script>
+<script src="./js/render.js" defer></script>
+<script src="./js/components/header.js" defer></script>
+<script src="./js/components/footer.js" defer></script>
+<script src="./js/components/modals.js" defer></script> <script type="module" src="./js/services/index.js" defer></script>
+
+</body>
+</html>

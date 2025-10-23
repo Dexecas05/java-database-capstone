@@ -107,3 +107,104 @@ with search, filter, and modal functionality.
 
  -->
 
+<!DOCTYPE html>
+<!-- Using Thymeleaf namespace for Spring Boot resource resolution -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Manage Doctors</title>
+
+    <!-- Favicon -->
+    <link rel="icon" th:href="@{/assets/images/logo/logo.png}" type="image/png">
+
+    <!-- CSS Links (Using Thymeleaf for correct path resolution) -->
+    <link rel="stylesheet" th:href="@{/assets/css/adminDashboard.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+
+</head>
+<body>
+
+<div class="container">
+    <div class="wrapper">
+
+        <!-- Placeholder for the Header Component (Will include 'Add Doctor' button) -->
+        <!-- The header.js script will target this ID and inject content -->
+        <div id="header"></div>
+
+        <main class="main-content">
+            <h2>Admin Control Panel</h2>
+
+            <section class="management-tools">
+                <div class="search-and-filter-bar">
+
+                    <!-- Search Bar -->
+                    <input
+                            type="text"
+                            id="searchBar"
+                            placeholder="Search doctors by name..."
+                            class="input-field"
+                    />
+
+                    <!-- Filter Section -->
+                    <div class="filters">
+                        <!-- Filter by Specialty -->
+                        <select id="specialtyFilter" class="select-dropdown">
+                            <option value="">Filter by Specialty</option>
+                            <!-- Specialties will be populated by JavaScript -->
+                        </select>
+
+                        <!-- Sort by Time (e.g., last modified, join date, availability) -->
+                        <select id="timeSortFilter" class="select-dropdown">
+                            <option value="">Sort by Time</option>
+                            <option value="recent">Most Recent</option>
+                            <option value="oldest">Oldest Entry</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="doctors-list-section">
+                <h3>Registered Doctors</h3>
+                <!-- Dynamic content area where doctor cards will be injected by JavaScript -->
+                <div id="content" class="doctors-grid">
+                    <!-- Doctor cards will be rendered here -->
+                    <p class="loading-message">Loading doctor data...</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Placeholder for the Footer Component -->
+        <div id="footer"></div>
+
+    </div>
+</div>
+
+<!-- Modal for Adding/Editing Doctors -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span id="closeModal" class="close-btn">&times;</span>
+        <!-- Dynamic content area where the Add Doctor form will be injected -->
+        <div id="modal-body">
+            <!-- Content will be injected by adminDashboard.js/modals.js -->
+        </div>
+    </div>
+</div>
+
+
+<!-- JavaScript Links (Using Thymeleaf for correct path resolution) -->
+<!-- Utility and Rendering Logic -->
+<script th:src="@{/js/util.js}" defer></script>
+<script th:src="@{/js/render.js}" defer></script>
+<script th:src="@{/js/components/modals.js}" defer></script>
+
+<!-- Layout Components -->
+<script th:src="@{/js/components/header.js}" defer></script>
+<script th:src="@{/js/components/footer.js}" defer></script>
+<script th:src="@{/js/components/doctorCard.js}" defer></script>
+
+<!-- Page-specific Logic and Services Entry Point -->
+<script type="module" th:src="@{/js/services/adminDashboard.js}" defer></script>
+
+</body>
+</html>
