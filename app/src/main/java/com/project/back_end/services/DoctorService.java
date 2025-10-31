@@ -1,6 +1,312 @@
 package com.project.back_end.services;
 
+import com.project.back_end.models.Appointment;
+import com.project.back_end.models.Doctor;
+import com.project.back_end.repo.AppointmentRepository;
+import com.project.back_end.repo.DoctorRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
 public class DoctorService {
+
+    // --- Repositories and Dependencies ---
+    private final DoctorRepository doctorRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final TokenService tokenService;
+
+    // Constructor Injection
+    public DoctorService(
+            DoctorRepository doctorRepository,
+            AppointmentRepository appointmentRepository,
+            TokenService tokenService) {
+        this.doctorRepository = doctorRepository;
+        this.appointmentRepository = appointmentRepository;
+        this.tokenService = tokenService;
+    }
+
+    // --- Utility/Placeholder Classes ---
+
+    // Placeholder for the Login DTO used in validateDoctor
+    public static class Login {
+        private String email;
+        private String password;
+
+        public String getEmail() { return email; }
+        public String getPassword() { return password; }
+        public void setEmail(String email) { this.email = email; }
+        public void setPassword(String password) { this.password = password; }
+    }
+
+    // --- Core Business Methods ---
+
+    /**
+     * Fetches the available slots for a specific doctor on a given date.
+     * @param doctorId The ID of the doctor.
+     * @param date The date for which availability is needed.
+     * @return A list of available time slots (Strings).
+     */
+    public List<String> getDoctorAvailability(Long doctorId, LocalDate date) {
+        Optional<Doctor> doctorOpt = doctorRepository.findById(doctorId);
+        if (doctorOpt.isEmpty()) {
+            return Collections.emptyList(); // Doctor not found
+        }
+
+        Doctor doctor = doctorOpt.get();
+        List<String> availableSlots = new ArrayList<>(doctor.getAvailableTimes()); // Doctor's default available times
+
+        // 1. Define time range for the given date
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.plusDays(1).atStartOfDay().minusNanos(1);
+
+        // 2. Fetch all booked appointments for the doctor on that date
+        List<Appointment> bookedAppointments = appointmentRepository.findByDoctorIdAndAppointmentTimeBetween(
+                doctorId, startOfDay, endOfDay
+        );
+
+        // 3. Extract the start time (as String "HH:mm") of each booked appointment
+        Set<String> bookedTimes = bookedAppointments.stream()
+                .map(a -> a.getAppointmentTime().toLocalTime().toString())
+                .collect(Collectors.toSet());
+
+        // 4. Filter out booked times from the doctor's available slots
+        return availableSlots.stream()
+                .filter(slot -> !bookedTimes.contains(LocalTime.parse(slot).toString()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Saves a new doctor to the database, checking for duplicates by email.
+     * @param doctor The doctor object to save.
+     * @return 1 for success, -1 if the doctor already exists, 0 for internal errors.
+     */
+    @Transactional
+    public int saveDoctor(Doctor doctor) {
+        if (doctorRepository.findByEmail(doctor.getEmail()).isPresent()) {
+            return -1; // Doctor already exists
+        }
+        try {
+            doctorRepository.save(doctor);
+            return 1; // Success
+        } catch (Exception e) {
+            // Log error
+            return 0; // Internal error
+        }
+    }
+
+    /**
+     * Updates the details of an existing doctor.
+     * @param doctor The doctor object with updated details.
+     * @return 1 for success, -1 if doctor not found, 0 for internal errors.
+     */
+    @Transactional
+    public int updateDoctor(Doctor doctor) {
+        Optional<Doctor> existingDoctorOpt = doctorRepository.findById(doctor.getId());
+        if (existingDoctorOpt.isEmpty()) {
+            return -1; // Doctor not found
+        }
+        try {
+            Doctor existingDoctor = existingDoctorOpt.get();
+            // Update fields manually (or use a mapping tool)
+            existingDoctor.setName(doctor.getName());
+            existingDoctor.setSpecialty(doctor.getSpecialty());
+            existingDoctor.setEmail(doctor.getEmail());
+            // NOTE: Password update should be handled separately and requires encoding
+            if (doctor.getPassword() != null && !doctor.getPassword().isEmpty()) {
+                existingDoctor.setPassword(doctor.getPassword()); // In real app, use BCryptEncoder here
+            }
+            existingDoctor.setPhone(doctor.getPhone());
+            existingDoctor.setAvailableTimes(doctor.getAvailableTimes());
+
+            doctorRepository.save(existingDoctor);
+            return 1; // Success
+        } catch (Exception e) {
+            // Log error
+            return 0; // Internal error
+        }
+    }
+
+    /**
+     * Retrieves a list of all doctors.
+     * @return A list of all doctors.
+     */
+    public List<Doctor> getDoctors() {
+        return doctorRepository.findAll();
+    }
+
+    /**
+     * Deletes a doctor by ID and all associated appointments.
+     * @param id The ID of the doctor to be deleted.
+     * @return 1 for success, -1 if doctor not found, 0 for internal errors.
+     */
+    @Transactional
+    public int deleteDoctor(long id) {
+        if (!doctorRepository.existsById(id)) {
+            return -1; // Doctor not found
+        }
+        try {
+            // Hint: Delete all associated appointments first
+            appointmentRepository.deleteAllByDoctorId(id);
+            doctorRepository.deleteById(id);
+            return 1; // Success
+        } catch (Exception e) {
+            // Log error
+            return 0; // Internal error
+        }
+    }
+
+    /**
+     * Validates a doctor's login credentials.
+     * @param login The login object containing email and password.
+     * @return A response with a token if valid, or an error message if not.
+     */
+    public ResponseEntity<Map<String, String>> validateDoctor(Login login) {
+        Map<String, String> response = new HashMap<>();
+
+        Optional<Doctor> doctorOpt = doctorRepository.findByEmail(login.getEmail());
+        if (doctorOpt.isEmpty()) {
+            response.put("error", "Invalid email or password.");
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
+
+        Doctor doctor = doctorOpt.get();
+        // NOTE: In a real app, use BCryptPasswordEncoder.matches(rawPassword, storedHash)
+        if (!doctor.getPassword().equals(login.getPassword())) {
+            response.put("error", "Invalid email or password.");
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
+
+        // Authentication successful, generate token
+        // MOCK: Replace with actual TokenService logic
+        String token = tokenService.generateToken(doctor.getId(), "DOCTOR");
+        response.put("token", token);
+        response.put("message", "Login successful.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
+     * Finds doctors by their name using partial match.
+     * @param name The name of the doctor to search for.
+     * @return A map with the list of doctors matching the name.
+     */
+    public Map<String, Object> findDoctorByName(String name) {
+        List<Doctor> doctors = doctorRepository.findByNameLike(name);
+        return createDoctorMap(doctors);
+    }
+
+    // --- Filtering Methods ---
+
+    /**
+     * Filters doctors by name, specialty, and availability during AM/PM.
+     */
+    public Map<String, Object> filterDoctorsByNameSpecilityandTime(String name, String specialty, String amOrPm) {
+        // 1. Filter by Name and Specialty (using the custom Repository query)
+        List<Doctor> doctors = doctorRepository.findByNameContainingIgnoreCaseAndSpecialtyIgnoreCase(name, specialty);
+
+        // 2. Filter by Time
+        List<Doctor> filteredDoctors = filterDoctorByTime(doctors, amOrPm);
+
+        return createDoctorMap(filteredDoctors);
+    }
+
+    /**
+     * Filters doctors by name and their availability during AM/PM.
+     */
+    public Map<String, Object> filterDoctorByNameAndTime(String name, String amOrPm) {
+        // 1. Filter by Name (using a simple custom Repository query or convention)
+        // Assuming findByNameLike is suitable for partial name search
+        List<Doctor> doctors = doctorRepository.findByNameLike(name);
+
+        // 2. Filter by Time
+        List<Doctor> filteredDoctors = filterDoctorByTime(doctors, amOrPm);
+
+        return createDoctorMap(filteredDoctors);
+    }
+
+    /**
+     * Filters doctors by name and specialty.
+     */
+    public Map<String, Object> filterDoctorByNameAndSpecility(String name, String specialty) {
+        // Use the custom Repository query for Name and Specialty
+        List<Doctor> doctors = doctorRepository.findByNameContainingIgnoreCaseAndSpecialtyIgnoreCase(name, specialty);
+        return createDoctorMap(doctors);
+    }
+
+    /**
+     * Filters doctors by specialty and their availability during AM/PM.
+     */
+    public Map<String, Object> filterDoctorByTimeAndSpecility(String specialty, String amOrPm) {
+        // 1. Filter by Specialty (using the case-insensitive Repository query)
+        List<Doctor> doctors = doctorRepository.findBySpecialtyIgnoreCase(specialty);
+
+        // 2. Filter by Time
+        List<Doctor> filteredDoctors = filterDoctorByTime(doctors, amOrPm);
+
+        return createDoctorMap(filteredDoctors);
+    }
+
+    /**
+     * Filters doctors by specialty.
+     */
+    public Map<String, Object> filterDoctorBySpecility(String specialty) {
+        List<Doctor> doctors = doctorRepository.findBySpecialtyIgnoreCase(specialty);
+        return createDoctorMap(doctors);
+    }
+
+    /**
+     * Filters doctors by their availability during AM/PM.
+     */
+    public Map<String, Object> filterDoctorsByTime(String amOrPm) {
+        // 1. Fetch all doctors
+        List<Doctor> doctors = doctorRepository.findAll();
+
+        // 2. Filter by Time
+        List<Doctor> filteredDoctors = filterDoctorByTime(doctors, amOrPm);
+
+        return createDoctorMap(filteredDoctors);
+    }
+
+    /**
+     * Private helper method to filter a list of doctors by their available times (AM/PM).
+     * @param doctors The list of doctors to filter.
+     * @param amOrPm Time of day: "AM" (slots before 12:00) or "PM" (slots at or after 12:00).
+     * @return A filtered list of doctors.
+     */
+    private List<Doctor> filterDoctorByTime(List<Doctor> doctors, String amOrPm) {
+        final boolean isAM = "AM".equalsIgnoreCase(amOrPm);
+
+        return doctors.stream()
+                .filter(doctor -> doctor.getAvailableTimes().stream()
+                        .anyMatch(slot -> {
+                            try {
+                                LocalTime time = LocalTime.parse(slot);
+                                return isAM ? time.isBefore(LocalTime.NOON) : !time.isBefore(LocalTime.NOON);
+                            } catch (Exception e) {
+                                // Handle malformed time slot string gracefully
+                                return false;
+                            }
+                        })
+                )
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Private helper method to structure the response map for doctor lists.
+     */
+    private Map<String, Object> createDoctorMap(List<Doctor> doctors) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("doctors", doctors);
+        result.put("count", doctors.size());
+        return result;
+    }
 
 // 1. **Add @Service Annotation**:
 //    - This class should be annotated with `@Service` to indicate that it is a service layer class.
