@@ -1,5 +1,6 @@
 package com.project.back_end.services;
 
+import com.project.back_end.DTO.Login;
 import com.project.back_end.models.Appointment;
 import com.project.back_end.models.Doctor;
 import com.project.back_end.repo.AppointmentRepository;
@@ -33,18 +34,6 @@ public class DoctorService {
         this.tokenService = tokenService;
     }
 
-    // --- Utility/Placeholder Classes ---
-
-    // Placeholder for the Login DTO used in validateDoctor
-    public static class Login {
-        private String email;
-        private String password;
-
-        public String getEmail() { return email; }
-        public String getPassword() { return password; }
-        public void setEmail(String email) { this.email = email; }
-        public void setPassword(String password) { this.password = password; }
-    }
 
     // --- Core Business Methods ---
 
@@ -171,7 +160,7 @@ public class DoctorService {
     public ResponseEntity<Map<String, String>> validateDoctor(Login login) {
         Map<String, String> response = new HashMap<>();
 
-        Optional<Doctor> doctorOpt = doctorRepository.findByEmail(login.getEmail());
+        Optional<Doctor> doctorOpt = doctorRepository.findByEmail(login.getIdentifier());
         if (doctorOpt.isEmpty()) {
             response.put("error", "Invalid email or password.");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
@@ -186,7 +175,7 @@ public class DoctorService {
 
         // Authentication successful, generate token
         // MOCK: Replace with actual TokenService logic
-        String token = tokenService.generateToken(doctor.getId(), "DOCTOR");
+        String token = tokenService.generateToken(doctor.getEmail(), "DOCTOR");
         response.put("token", token);
         response.put("message", "Login successful.");
         return new ResponseEntity<>(response, HttpStatus.OK);

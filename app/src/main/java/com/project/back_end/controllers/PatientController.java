@@ -80,7 +80,7 @@ public class PatientController {
      * @return The result of the login validation.
      */
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> patientLogin(@RequestBody Service.Login login) {
+    public ResponseEntity<Map<String, String>> patientLogin(@RequestBody Login login) {
         // We use the validatePatientLogin method from the central Service class
         return centralService.validatePatientLogin(login);
     }

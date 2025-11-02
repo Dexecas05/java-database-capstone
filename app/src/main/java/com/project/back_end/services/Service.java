@@ -1,5 +1,6 @@
 package com.project.back_end.services;
 
+import com.project.back_end.DTO.Login;
 import com.project.back_end.models.Admin;
 import com.project.back_end.models.Appointment;
 import com.project.back_end.models.Doctor;
@@ -9,7 +10,6 @@ import com.project.back_end.repo.DoctorRepository;
 import com.project.back_end.repo.PatientRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.Collections;
@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 
 
-@Service
+@org.springframework.stereotype.Service
 public class Service {
 
     // --- Dependencies ---
@@ -46,17 +46,6 @@ public class Service {
         this.patientService = patientService;
     }
 
-    // Placeholder for the Login DTO (as used in DoctorService and PatientService)
-    public static class Login {
-        private String email;
-        private String password;
-
-        // Getters and Setters
-        public String getEmail() { return email; }
-        public String getPassword() { return password; }
-        public void setEmail(String email) { this.email = email; }
-        public void setPassword(String password) { this.password = password; }
-    }
 
 
     // --- Core Methods ---
@@ -101,7 +90,7 @@ public class Service {
         }
 
         // 3. If valid, generate a token
-        String token = tokenService.generateToken(storedAdmin.getId(), "ADMIN");
+        String token = tokenService.generateToken(storedAdmin.getUsername(), "ADMIN");
         response.put("token", token);
         response.put("message", "Admin login successful.");
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -188,7 +177,7 @@ public class Service {
         Map<String, String> response = new HashMap<>();
 
         // 1. Find the Patient by email
-        Optional<Patient> patientOpt = patientRepository.findByEmail(login.getEmail());
+        Optional<Patient> patientOpt = patientRepository.findByEmail(login.getIdentifier());
 
         if (patientOpt.isEmpty()) {
             response.put("error", "Invalid email or password.");
@@ -204,7 +193,7 @@ public class Service {
         }
 
         // 3. If valid, generate a token
-        String token = tokenService.generateToken(patient.getId(), "PATIENT");
+        String token = tokenService.generateToken(patient.getEmail(), "PATIENT");
         response.put("token", token);
         response.put("message", "Patient login successful.");
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -215,11 +204,19 @@ public class Service {
      */
     public ResponseEntity<Map<String, Object>> filterPatient(String condition, String name, String token) {
         // 1. Get the patient ID from the token
-        Long patientId = tokenService.getUserIdFromToken(token);
+        String patientIdentifier = tokenService.extractIdentifier(token);
 
-        if (patientId == null) {
+        if (patientIdentifier == null) {
             return new ResponseEntity<>(Collections.singletonMap("error", "Unauthorized: Invalid or missing token."), HttpStatus.UNAUTHORIZED);
         }
+
+        // 2. Look up the Patient by identifier (email) to get the ID
+        Optional<Patient> patientOpt = patientRepository.findByEmail(patientIdentifier);
+
+        if (patientOpt.isEmpty()) {
+            return new ResponseEntity<>(Collections.singletonMap("error", "Patient not found for token identifier."), HttpStatus.UNAUTHORIZED);
+        }
+        Long patientId = patientOpt.get().getId(); // Now we have the ID
 
         // --- Filtering Logic (delegated to PatientService) ---
 

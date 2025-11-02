@@ -221,13 +221,15 @@ public class PatientService {
      * @return The patient's details or an error message.
      */
     public ResponseEntity<Map<String, Object>> getPatientDetails(String token) {
-        // MOCK: Extract the email from the token (This logic should be in TokenService)
-        String email = tokenService.getEmailFromToken(token);
+        // 1. Extract the identifier (which is the email for patients)
+        String email = tokenService.extractIdentifier(token);
 
         if (email == null) {
+            // If the identifier can't be extracted, the token is invalid/expired
             return new ResponseEntity<>(Collections.singletonMap("error", "Invalid or expired token."), HttpStatus.UNAUTHORIZED);
         }
 
+        // 2. Retrieve the corresponding patient from the database using the email
         Optional<Patient> patientOpt = patientRepository.findByEmail(email);
 
         if (patientOpt.isEmpty()) {
